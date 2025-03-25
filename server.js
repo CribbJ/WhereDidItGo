@@ -14,6 +14,8 @@ const checkJwt = auth({
     issuerBaseURL: `https://${authConfig.domain}`
 });
 
+
+// Validate JWT token
 app.get("/api/external", checkJwt, (req, res) => {
     res.send({
         msg: "Your access token was successfully validated!"

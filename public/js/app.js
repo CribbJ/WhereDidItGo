@@ -8,7 +8,10 @@ const configureClient = async () => {
 
     auth0Client = await auth0.createAuth0Client({
         domain: config.domain,
-        clientId: config.clientId
+        clientId: config.clientId,
+        authorizationParams: {
+            audience: config.audience
+        }
     });
 };
 
@@ -43,9 +46,12 @@ const updateUI = async () => {
 
     document.getElementById("btn-logout").disabled = !isAuthenticated;
     document.getElementById("btn-login").disabled = isAuthenticated;
+    document.getElementById("btn-call-api").disabled = !isAuthenticated;
 
     if (isAuthenticated) {
-        document.getElementById("gated-content").classList.remove("hidden");
+        document.getElementById(
+            "gated-content"
+        ).classList.remove("hidden");
 
         document.getElementById(
             "ipt-access-token"
@@ -74,4 +80,32 @@ const logout = () => {
             returnTo: window.location.origin
         }
     });
+};
+
+const callApi = async () => {
+    try {
+
+        // Get the access token from the Auth0 client
+        const token = await auth0Client.getTokenSilently();
+
+        // Make the call to the API, setting the token
+        // in the Authorization header
+        const response = await fetch("/api/external", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        // Fetch the JSON result
+        const responseData = await response.json();
+
+        // Display the result in the output element
+        const responseElement = document.getElementById("api-call-result");
+
+        responseElement.innerText = JSON.stringify(responseData, {}, 2);
+
+    } catch (e) {
+        // Display errors in the console
+        console.error(e);
+    }
 };
