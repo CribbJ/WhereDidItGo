@@ -57,3 +57,6 @@ cypress/screenshots/
 *.log
 *.tmp
 *.cache
+
+# Auth0
+auth_config.json
